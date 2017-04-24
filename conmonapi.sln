@@ -5,9 +5,9 @@ VisualStudioVersion = 15.0.26403.7
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "conmonapi", "src\conmonapi.csproj", "{36CA0151-3CAF-4A8F-83C8-ECF3CE4DA7C7}"
 EndProject
-Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "docker-compose", "docker-compose.dcproj", "{23B17833-A359-43BD-9C59-946B1395C0DE}"
+Project("{E53339B2-1760-4266-BCC7-CA923CBCF16C}") = "conmonapi.docker", "conmonapi.docker.dcproj", "{23B17833-A359-43BD-9C59-946B1395C0DE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests", "tests\tests.csproj", "{6A3EA12E-EE70-4FA5-B63F-0233A308F310}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "conmonapi.tests", "tests\conmonapi.tests.csproj", "{6A3EA12E-EE70-4FA5-B63F-0233A308F310}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{CD875B6D-B101-4C2A-9CE9-9203435D1886}"
 	ProjectSection(SolutionItems) = preProject
