@@ -1,7 +1,7 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace tests
+namespace conmonapi.tests
 {
     [TestClass]
     public class UnitTest1

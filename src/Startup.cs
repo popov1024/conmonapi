@@ -2,13 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using conmonapi.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
+using Swashbuckle.Swagger.Model;
 
-namespace src
+namespace conmonapi
 {
     public class Startup
     {
@@ -29,6 +31,20 @@ namespace src
         {
             // Add framework services.
             services.AddMvc();
+
+            services.AddScoped<IContentSore, MongodbStore>(
+                p => new MongodbStore(
+                    Configuration.GetSection("ConnectionStrings").GetSection("mongodb").GetSection("host").Value,
+                    Configuration.GetSection("ConnectionStrings").GetSection("mongodb").GetSection("database").Value
+                )
+            );
+
+            services.AddSwaggerGen();
+            services.ConfigureSwaggerGen(cf =>
+                {
+                    cf.SingleApiVersion(new Info { Title = "AZS data warehouse", Version = "v1" });
+                }
+            );
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -38,6 +54,11 @@ namespace src
             loggerFactory.AddDebug();
 
             app.UseMvc();
+
+            // Enable middleware to serve generated Swagger as a JSON endpoint
+            app.UseSwagger();
+            // Enable middleware to serve swagger-ui assets (HTML, JS, CSS etc.)
+            app.UseSwaggerUi();
         }
     }
 }
