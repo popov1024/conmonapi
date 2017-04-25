@@ -106,7 +106,7 @@ namespace conmonapi.Services
                 return null;
             }
             BsonValue contentType;
-            fileInfo.Metadata.TryGetValue("contentType", out contentType);
+            fileInfo.Metadata.TryGetValue("ContentType", out contentType);
             return contentType.AsString;
         }
     }
