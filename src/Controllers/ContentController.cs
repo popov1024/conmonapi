@@ -21,18 +21,27 @@ namespace conmonapi.Controllers
             _environment = environment;
         }
 
+       [HttpGet("{author}/{type}/{filename}/{fileNameChilde?}")]
+        public async Task<IActionResult> Get(string author, string type, string fileName, string fileNameChilde)
+        {
+            var tuple = await _contentStore.GetContentAsync(
+                new Content(author, type, fileName, fileNameChilde)
+            );
+            if (tuple.Item1 == null)
+            {
+                return NotFound();
+            }
+            var file = new FileContentResult(tuple.Item1, tuple.Item2.ContentType);
+            return file;
+        }
+
         // POST api/v1/NomenclatureContent/1
-        [HttpPost("{type}/{filename}/{fileNameChilde?}")]
-        public async Task<IActionResult> Post(string type, string fileName, string fileNameChilde, [FromHeader] string author)
+        [HttpPost("{author}/{type}/{filename}/{fileNameChilde?}")]
+        public async Task<IActionResult> Post(string author, string type, string fileName, string fileNameChilde)
         {
             var input = new StreamReader(Request.Body).BaseStream;
             var r = await _contentStore.SetContentAsync(input,
-                new Content {
-                    FileName = fileNameChilde == null ? fileName : fileNameChilde,
-                    ContentType = Request.ContentType,
-                    Author = author,
-                    FileNameParent = fileName
-                }
+                new Content(author, type, fileName, fileNameChilde, Request.ContentType)
             );
             if (!r)
             {

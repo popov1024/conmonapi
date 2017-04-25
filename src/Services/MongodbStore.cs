@@ -6,6 +6,7 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Driver.GridFS;
 using conmonapi.Models;
+using System.Linq;
 
 namespace conmonapi.Services
 {
@@ -40,18 +41,19 @@ namespace conmonapi.Services
             throw new NotImplementedException();
         }
 
-        async Task<byte[]> IContentSore.GetContentAsync(Content content)
+        async Task<Tuple<byte[], Content>> IContentSore.GetContentAsync(Content content)
         {
             byte[] bytes;
+            content.ContentType = await GetContentTypeAsync(content.Id);
             try
             {
                 bytes = await _bucket.DownloadAsBytesByNameAsync(content.Id);
             }
             catch (Exception)
             {
-                return null;
+                return new Tuple<byte[], Content>(null, content);
             }
-            return bytes;
+            return new Tuple<byte[], Content>(bytes, content);
         }
 
         async Task<IEnumerable<Content>> IContentSore.GetContentsAsync(int skip, int limit)
@@ -74,6 +76,38 @@ namespace conmonapi.Services
         async Task<bool> IContentSore.UpdateContentAsync(Stream stream, Content content)
         {
             throw new NotImplementedException();
+        }
+
+        private async Task<GridFSFileInfo> getFileInfo(string filename)
+        {
+            var filter = Builders<GridFSFileInfo>.Filter.Eq(x => x.Filename, filename);
+            var sort = Builders<GridFSFileInfo>.Sort.Descending(x => x.UploadDateTime);
+            var options = new GridFSFindOptions
+            {
+                Limit = 1,
+                Sort = sort
+            };
+            using (var cursor = await _bucket.FindAsync(filter, options))
+            {
+                var fs = (await cursor.ToListAsync());
+                if (fs != null && fs.Count > 0)
+                {
+                    return fs.First();
+                }
+                return null;
+            }
+        }
+
+        private async Task<string> GetContentTypeAsync(string filename)
+        {
+            var fileInfo = await getFileInfo(filename);
+            if (fileInfo == null)
+            {
+                return null;
+            }
+            BsonValue contentType;
+            fileInfo.Metadata.TryGetValue("contentType", out contentType);
+            return contentType.AsString;
         }
     }
 }

@@ -8,6 +8,25 @@ namespace conmonapi.Models
 {
     public class Content
     {
+        private string fileNameChilde;
+
+        public Content(string author, string type, string fileName, string fileNameChilde)
+        {
+            Author = author;
+            Type = type;
+            FileName = fileName;
+            this.fileNameChilde = fileNameChilde;
+        }
+
+        public Content(string author, string type, string fileName, string fileNameChilde, string contentType)
+        {
+            FileName = fileNameChilde == null ? fileName : fileNameChilde;
+            ContentType = contentType;
+            Author = author;
+            FileNameParent = fileName;
+            Type = type;
+        }
+
         public string Id {
             get {
                 if (FileNameParent == null || FileNameParent == FileName)
