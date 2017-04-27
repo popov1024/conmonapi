@@ -38,7 +38,13 @@ namespace conmonapi.Services
         
         async Task<bool> IContentSore.DeleteContentAsync(Content content)
         {
-            throw new NotImplementedException();
+            var fileInfo = await getFileInfo(content.Id);
+            if (fileInfo == null)
+            {
+                return false;
+            }
+            await _bucket.DeleteAsync(fileInfo.Id);
+            return true;
         }
 
         async Task<Tuple<byte[], Content>> IContentSore.GetContentAsync(Content content)
@@ -75,7 +81,21 @@ namespace conmonapi.Services
 
         async Task<bool> IContentSore.UpdateContentAsync(Stream stream, Content content)
         {
-            throw new NotImplementedException();
+            var fileInfo = await getFileInfo(content.Id);
+            if (fileInfo == null)
+            {
+                return false;
+            }
+            var options = new GridFSUploadOptions
+            {
+                Metadata = new BsonDocument
+                {
+                    { "ContentType", content.ContentType }
+                }
+            };
+            await _bucket.DeleteAsync(fileInfo.Id);
+            var id = await _bucket.UploadFromStreamAsync(content.Id, stream, options);
+            return true;
         }
 
         private async Task<GridFSFileInfo> getFileInfo(string filename)

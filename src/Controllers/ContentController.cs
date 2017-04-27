@@ -35,12 +35,38 @@ namespace conmonapi.Controllers
             return file;
         }
 
-        // POST api/v1/NomenclatureContent/1
         [HttpPost("{author}/{type}/{filename}/{fileNameChilde?}")]
         public async Task<IActionResult> Post(string author, string type, string fileName, string fileNameChilde)
         {
             var input = new StreamReader(Request.Body).BaseStream;
             var r = await _contentStore.SetContentAsync(input,
+                new Content(author, type, fileName, fileNameChilde, Request.ContentType)
+            );
+            if (!r)
+            {
+                return BadRequest();
+            }
+            return Ok();
+        }
+
+        [HttpPut("{author}/{type}/{filename}/{fileNameChilde?}")]
+        public async Task<IActionResult> Put(string author, string type, string fileName, string fileNameChilde)
+        {
+            var input = new StreamReader(Request.Body).BaseStream;
+            var r = await _contentStore.UpdateContentAsync(input,
+                new Content(author, type, fileName, fileNameChilde, Request.ContentType)
+            );
+            if (!r)
+            {
+                return BadRequest();
+            }
+            return Ok();
+        }
+
+        [HttpDelete("{author}/{type}/{filename}/{fileNameChilde?}")]
+        public async Task<IActionResult> Delete(string author, string type, string fileName, string fileNameChilde)
+        {
+            var r = await _contentStore.DeleteContentAsync(
                 new Content(author, type, fileName, fileNameChilde, Request.ContentType)
             );
             if (!r)
